@@ -23,11 +23,24 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Debug - Check gradlew file
+        run: |
+          echo "Checking gradlew file..."
+          file gradlew
+          head -n 5 gradlew
+          echo "Checking file permissions..."
+          ls -la gradlew
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew build -x publish -x publishToMavenLocal
+        run: ./gradlew build -x publish -x publishToMavenLocal --stacktrace
+
+      - name: List build outputs
+        run: |
+          echo "Listing build outputs..."
+          find . -name "*.jar" -path "*/build/libs/*" -type f
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -38,3 +51,4 @@ jobs:
             party-api/build/libs/*.jar
             party-hooks/build/libs/*.jar
           retention-days: 7
+          if-no-files-found: error
